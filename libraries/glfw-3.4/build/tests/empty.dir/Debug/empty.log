@@ -1,0 +1,5 @@
+﻿  Building Custom Rule D:/Sakura-Engine/libraries/glfw-3.4/tests/CMakeLists.txt
+  empty.c
+  tinycthread.c
+  Generating Code...
+  empty.vcxproj -> D:\Sakura-Engine\libraries\glfw-3.4\build\tests\Debug\empty.exe
