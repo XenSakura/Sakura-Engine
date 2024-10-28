@@ -1,6 +1,6 @@
 #include "RenderSystem.h"
 int main(void)
 {
-	placeholder();
+	OpenGLPractice();
 	return 0;
 }
