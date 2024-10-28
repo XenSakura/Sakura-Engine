@@ -1,3 +1,0 @@
-﻿  RenderSystem.cpp
-D:\Sakura-Engine\source\RenderSystem.cpp(267,1): warning C4172: returning address of local variable or temporary: shaders
-  engine.vcxproj -> D:\Sakura-Engine\x64\Debug\engine.exe
