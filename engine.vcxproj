@@ -135,9 +135,11 @@
     <ClCompile Include="libraries\GLAD\src\glad.c" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\RenderSystem.cpp" />
+    <ClCompile Include="source\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\RenderSystem.h" />
+    <ClInclude Include="source\Shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

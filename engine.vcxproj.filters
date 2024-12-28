@@ -33,9 +33,15 @@
     <ClCompile Include="libraries\GLAD\src\glad.c">
       <Filter>Engine\Render</Filter>
     </ClCompile>
+    <ClCompile Include="source\Shader.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\RenderSystem.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Shader.h">
       <Filter>Engine\Render</Filter>
     </ClInclude>
   </ItemGroup>
