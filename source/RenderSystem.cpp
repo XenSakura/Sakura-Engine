@@ -19,7 +19,7 @@ namespace GLAD
 namespace shaders
 {
 	void CompileShaders(std::unordered_map<std::string, unsigned int>& shaders);
-	std::unordered_map<std::string, unsigned int>& CreateShaderProgram();
+	unsigned int CreateShaderProgram();
 	const char* vertexShaderSource =
 		"#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
@@ -61,42 +61,30 @@ void OpenGLPractice()
 
 	//set up vertex data and buffers and configure vertex attributes
 	// -------------------------------------------------------------
-	float firstTriangle[] =
+	float vertices[] =
 	{
-		-0.9f, -0.5f, 0.0f,  // left 
-		-0.0f, -0.5f, 0.0f,  // right
-		-0.45f, 0.5f, 0.0f,  // top 
-	};
-	float secondTriangle[] = {
-		0.0f, -0.5f, 0.0f,  // left
-		0.9f, -0.5f, 0.0f,  // right
-		0.45f, 0.5f, 0.0f   // top 
+		0.5f, -0.5f, 0.0f,  // bottom right
+		-0.5f, -0.5f, 0.0f,  // bottom left
+		 0.0f,  0.5f, 0.0f   // top 
 	};
 
 
-	unsigned int VBO[2], VAO[2];
-	glGenVertexArrays(2, VAO);
-	glGenBuffers(2, VBO);
+	unsigned int VBO, VAO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
 
 	//bind the vertex array object first, then bind and set the vertex buffers,
 	//and then configure vertex attributes
-	glBindVertexArray(VAO[0]);
+	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glBindVertexArray(VAO[1]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
+	glBindVertexArray(VAO);
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
@@ -107,22 +95,18 @@ void OpenGLPractice()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaders["ShaderProgram"]);
-		glBindVertexArray(VAO[0]);
+		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		glUseProgram(shaders["ShaderProgram2"]);
-		glBindVertexArray(VAO[1]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	//de-allocate all resources
-	glDeleteVertexArrays(2, VAO);
-	glDeleteBuffers(2, VBO);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 	glDeleteProgram(shaders["ShaderProgram"]);
-	glDeleteProgram(shaders["ShaderProgram2"]);
 	glfwTerminate();
 	return;
 }
@@ -210,38 +194,19 @@ void shaders::CompileShaders(std::unordered_map<std::string, unsigned int>& shad
 		std::cout << "ERROR::SHADER::FRAGMENT_COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 	shaders.insert(std::make_pair("fragmentShader", fragmentShader));
-
-	//yellow shader
-	unsigned int yellowShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(yellowShader, 1, &yellowShaderSource, NULL);
-	glCompileShader(yellowShader);
-
-	//chec for shader compile errors
-	glGetShaderiv(yellowShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::YELLOW_COMPILATION_FAILED\n" << infoLog << std::endl;	
-	}
-	shaders.insert(std::make_pair("yellowShader", yellowShader));
 }
 
-std::unordered_map<std::string, unsigned int>& shaders::CreateShaderProgram()
+unsigned int shaders::CreateShaderProgram()
 {
 	std::unordered_map<std::string, unsigned int>shaders;
 	CompileShaders(shaders);
 	//link shaders
 	unsigned int shaderProgram = glCreateProgram();
-	unsigned int shaderProgram2 = glCreateProgram();
 	unsigned int vShader = shaders["vertexShader"];
 	unsigned int fShader = shaders["fragmentShader"];
-	unsigned int yShader = shaders["yellowShader"];
 	glAttachShader(shaderProgram, vShader);
 	glAttachShader(shaderProgram, fShader);
-	glAttachShader(shaderProgram2, vShader);
-	glAttachShader(shaderProgram2, fShader);
 	glLinkProgram(shaderProgram);
-	glLinkProgram(shaderProgram2);
 
 	//check for linking errors
 	int success;
@@ -253,16 +218,9 @@ std::unordered_map<std::string, unsigned int>& shaders::CreateShaderProgram()
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
-	shaders.insert(std::make_pair("ShaderProgram", shaderProgram));
-	glGetProgramiv(shaderProgram2, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(shaderProgram2, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	shaders.insert(std::make_pair("ShaderProgram2", shaderProgram2));
+	
+	
 	glDeleteShader(vShader);
 	glDeleteShader(fShader);
-	glDeleteShader(yShader);
-	return shaders;
+	return shaderProgram;
 }
